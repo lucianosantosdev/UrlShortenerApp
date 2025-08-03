@@ -12,6 +12,7 @@ kotlinxSerialization= "1.9.0"
 retrofit = "3.0.0"
 mockk = "1.14.4"
 loggingInterceptor = "5.1.0"
+kotlinxCoroutines = "1.10.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,8 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 mockk-agent = { group = "io.mockk", name = "mockk-agent", version.ref = "mockk" }
+# coroutines tests
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

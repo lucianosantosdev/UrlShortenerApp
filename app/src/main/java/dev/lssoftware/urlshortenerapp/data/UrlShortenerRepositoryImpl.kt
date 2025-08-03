@@ -6,7 +6,7 @@ import dev.lssoftware.urlshortenerapp.network.UrlShortenerAPI
 class UrlShortenerRepositoryImpl : UrlShortenerRepository {
     private val urlShortenerService = UrlShortenerAPI.create()
 
-    override suspend fun shortUrl(originalUrl: String): Result<String> {
+    override suspend fun shortenUrl(originalUrl: String): Result<String> {
     return try {
             val response = urlShortenerService.shortenUrl(AliasRequestDto(url = originalUrl))
             if (response.isSuccessful) {

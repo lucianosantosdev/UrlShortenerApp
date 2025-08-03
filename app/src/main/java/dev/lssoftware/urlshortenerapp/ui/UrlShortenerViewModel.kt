@@ -23,7 +23,7 @@ class UrlShortenerViewModel(
     )
 
     suspend fun shortenUrl(originalUrl: String) {
-        val result = urlShortenerRepository.shortUrl(originalUrl)
+        val result = urlShortenerRepository.shortenUrl(originalUrl)
         result.onSuccess { shortenedUrl ->
             _uiState.update {
                 it.copy(
