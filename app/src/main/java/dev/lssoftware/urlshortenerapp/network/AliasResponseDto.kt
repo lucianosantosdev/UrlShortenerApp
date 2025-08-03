@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AliasResponseDto(
     val alias: String,
-    @SerialName("_links") val links: List<LinkDto>
+    @SerialName("_links") val links: LinkDto
 )
 
 @Serializable

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Url Shortener App</string>
+    <string name="url_shortening_error">Error shortening Url</string>
 </resources>

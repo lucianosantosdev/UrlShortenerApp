@@ -30,7 +30,7 @@ val LocalSnackbarHostState = staticCompositionLocalOf<SnackbarHostState> {
 
 @Composable
 fun App(
-    viewModel: UrlShortenerViewModel = viewModel()
+    viewModel: UrlShortenerViewModel
 ) {
     AppScaffold {
         MainScreen(

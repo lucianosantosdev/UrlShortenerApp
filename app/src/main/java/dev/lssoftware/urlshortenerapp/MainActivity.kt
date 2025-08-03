@@ -11,16 +11,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.lssoftware.urlshortenerapp.data.UrlShortenerRepositoryImpl
 import dev.lssoftware.urlshortenerapp.ui.App
 import dev.lssoftware.urlshortenerapp.ui.UrlShortenerViewModel
 import dev.lssoftware.urlshortenerapp.ui.theme.UrlShortenerAppTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var viewModelFactory: UrlShortenerViewModel.Factory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val repository = UrlShortenerRepositoryImpl()
+        viewModelFactory = UrlShortenerViewModel.Factory(repository)
         enableEdgeToEdge()
         setContent {
-            App()
+            val viewModel: UrlShortenerViewModel = viewModel(factory = viewModelFactory)
+            App(viewModel)
         }
     }
 }

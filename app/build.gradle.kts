@@ -36,6 +36,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -62,10 +63,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.okhttp.logging.interceptor)
     // Json converter
     implementation(libs.kotlinx.serialization.json)
     // Tests
