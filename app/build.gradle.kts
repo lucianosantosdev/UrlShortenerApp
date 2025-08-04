@@ -19,6 +19,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["targetPackage"] = "dev.lssoftware.urlshortenerapp"
     }
 
     buildTypes {
@@ -38,6 +39,14 @@ android {
         compose = true
         buildConfig = true
     }
+    packaging {
+        resources {
+            excludes += mutableSetOf(
+                "META-INF/LICENSE-notice.md",
+                "META-INF/LICENSE.md",
+            )
+        }
+    }
 }
 
 kotlin {
@@ -56,13 +65,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.kotlinx.serialization)
@@ -71,13 +73,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Tests
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
-    testImplementation(libs.mockk.android)
     testImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.mockk.agent)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.compose.ui.test)
+    androidTestImplementation(libs.compose.ui.test.manifest)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }

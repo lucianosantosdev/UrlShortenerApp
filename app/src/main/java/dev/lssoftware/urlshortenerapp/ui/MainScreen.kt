@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.SnackbarDuration
@@ -17,22 +17,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.lssoftware.urlshortenerapp.model.ShortenUrl
 import dev.lssoftware.urlshortenerapp.ui.theme.UrlShortenerAppTheme
-import kotlinx.coroutines.launch
+
+const val URL_TEXT_FIELD_TAG = "URL_TEXT_FIELD_TAG"
+const val SHORTEN_BUTTON_TAG = "SHORTEN_BUTTON_TAG"
+const val SHORTENED_URL_LIST_TAG = "SHORTENED_URL_LIST_TAG"
+const val SHORTENED_URL_LIST_ITEM_TAG = "SHORTENED_URL_LIST_ITEM_TAG"
 
 @Composable
 fun MainScreen(
     viewModel: UrlShortenerViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHostState.current
     val context = LocalContext.current
 
@@ -49,9 +52,7 @@ fun MainScreen(
     MainScreenContent(
         shortenedUrls = uiState.shortenedUrls,
         onShortenUrl = { url ->
-            coroutineScope.launch {
-                viewModel.shortenUrl(url)
-            }
+            viewModel.shortenUrl(url)
         },
     )
 }
@@ -64,7 +65,7 @@ fun MainScreenContent(
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        UrlInput() {
+        UrlInput {
             onShortenUrl(it)
         }
         RecentlyShortenedUrlList(
@@ -78,18 +79,20 @@ fun UrlInput(
     modifier: Modifier = Modifier,
     onShortenUrl: (String) -> Unit = {}
 ) {
-   var url by remember { mutableStateOf("") }
+    var url by remember { mutableStateOf("") }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TextField(
+            modifier = Modifier.testTag(URL_TEXT_FIELD_TAG),
             value = url,
             onValueChange = { url = it },
             label = { Text("Enter URL to shorten") },
             placeholder = { Text("https://example.com") }
         )
         Button(
+            modifier = Modifier.testTag(SHORTEN_BUTTON_TAG),
             onClick = { onShortenUrl(url) },
             enabled = url.isNotEmpty()
         ) {
@@ -102,12 +105,17 @@ fun UrlInput(
 fun RecentlyShortenedUrlList(
     shortenedUrls: List<ShortenUrl> = emptyList()
 ) {
-    LazyColumn {
-        items(shortenedUrls) { url ->
+    LazyColumn(
+        modifier = Modifier.testTag(SHORTENED_URL_LIST_TAG),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        itemsIndexed(shortenedUrls) { index, url ->
             ListItem(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .testTag("${SHORTENED_URL_LIST_ITEM_TAG}_$index"),
                 headlineContent = { Text(url.originalUrl) },
                 supportingContent = { Text(url.shortenedUrl) },
-                modifier = Modifier.padding(8.dp)
             )
         }
     }

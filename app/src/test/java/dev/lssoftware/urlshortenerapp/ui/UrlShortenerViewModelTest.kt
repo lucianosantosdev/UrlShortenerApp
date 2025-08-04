@@ -1,45 +1,40 @@
 package dev.lssoftware.urlshortenerapp.ui
 
-import dev.lssoftware.urlshortenerapp.data.UrlShortenerRepository
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.impl.annotations.MockK
-import io.mockk.junit4.MockKRule
+import dev.lssoftware.urlshortenerapp.MainDispatcherRule
+import dev.lssoftware.urlshortenerapp.data.FakeUrlShortenerRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.junit.Assert.assertEquals
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 class UrlShortenerViewModelTest {
- @OptIn(ExperimentalCoroutinesApi::class)
- private val testDispatcher = UnconfinedTestDispatcher()
- @get:Rule
- val mockkRule = MockKRule(this)
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
- @MockK
- lateinit var mockUrlShortenerRepository: UrlShortenerRepository
+    private val fakeUrlShortenerRepository = FakeUrlShortenerRepositoryImpl()
 
- val viewModel by lazy {
-     UrlShortenerViewModel(mockUrlShortenerRepository)
- }
+    val viewModel by lazy {
+        UrlShortenerViewModel(fakeUrlShortenerRepository)
+    }
 
- @Test
- fun `When a valid URL is provided, then the URL should be shortened successfully`() = runTest {
-     // Given
-     val validUrl = "https://www.example.com"
-     val fakeShortenedUrl = "https://short.url/abc123"
-     coEvery { mockUrlShortenerRepository.shortenUrl(validUrl) } returns Result.success(fakeShortenedUrl)
-     // When
-     viewModel.shortenUrl(validUrl)
-     // Then
-     assert(viewModel.uiState.value.shortenedUrls.size == 1)
-     val shortenedUrl = viewModel.uiState.value.shortenedUrls.first()
-     assertEquals(validUrl, shortenedUrl.originalUrl)
-     assertEquals(fakeShortenedUrl, shortenedUrl.shortenedUrl)
-     coVerify { mockUrlShortenerRepository.shortenUrl(validUrl) }
- }
+    @Test
+    fun `When a valid URL is provided, then the URL should be shortened successfully`() = runTest {
+        // Given
+        val validUrl = "https://www.example.com"
+        val fakeShortenedUrl = "https://short.url/abc123"
+        fakeUrlShortenerRepository.shortenedUrlResponse = fakeShortenedUrl
+        // When
+        viewModel.shortenUrl(validUrl)
+        // Then
+        // Verify that the repository was called with the correct URL
+        assertEquals(validUrl, fakeUrlShortenerRepository.calledUrls.first())
+        // Verify that the UI state has been updated with the shortened URL
+        assert(viewModel.uiState.value.shortenedUrls.size == 1)
+        val shortenedUrl = viewModel.uiState.value.shortenedUrls.first()
+        assertEquals(validUrl, shortenedUrl.originalUrl)
+        assertEquals(fakeShortenedUrl, shortenedUrl.shortenedUrl)
+
+    }
 }

@@ -3,6 +3,7 @@ package dev.lssoftware.urlshortenerapp.ui
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import dev.lssoftware.urlshortenerapp.R
 import dev.lssoftware.urlshortenerapp.data.UrlShortenerRepository
 import dev.lssoftware.urlshortenerapp.model.ShortenUrl
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class UrlShortenerViewModel(
     private val urlShortenerRepository: UrlShortenerRepository
@@ -19,25 +21,26 @@ class UrlShortenerViewModel(
 
     data class UiState(
         val shortenedUrls: List<ShortenUrl> = emptyList(),
-        @StringRes val errorMessage:  Int? = null
+        @StringRes val errorMessage: Int? = null
     )
 
-    suspend fun shortenUrl(originalUrl: String) {
-        val result = urlShortenerRepository.shortenUrl(originalUrl)
-        result.onSuccess { shortenedUrl ->
-            _uiState.update {
-                it.copy(
-                    shortenedUrls = it.shortenedUrls + ShortenUrl(originalUrl, shortenedUrl),
-                    errorMessage = null
-                )
-            }
-        }.onFailure { error ->
-            println("Error shortening URL: ${error.message}")
-            // TODO: mapping error to a user-friendly message
-            _uiState.update {
-                it.copy(
-                    errorMessage = R.string.url_shortening_error
-                )
+    fun shortenUrl(originalUrl: String) {
+        viewModelScope.launch {
+            val result: Result<String> = urlShortenerRepository.shortenUrl(originalUrl)
+            result.onSuccess { shortenedUrl ->
+                _uiState.update {
+                    it.copy(
+                        shortenedUrls = it.shortenedUrls + ShortenUrl(originalUrl, shortenedUrl),
+                        errorMessage = null
+                    )
+                }
+            }.onFailure { error ->
+                // TODO: mapping error to a user-friendly message
+                _uiState.update {
+                    it.copy(
+                        errorMessage = R.string.url_shortening_error
+                    )
+                }
             }
         }
     }
