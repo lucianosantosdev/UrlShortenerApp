@@ -63,7 +63,7 @@ fun MainScreen(
         isLoading = uiState.isLoading,
         shortenedUrls = uiState.shortenedUrls,
         onShortenUrl = { url ->
-            viewModel.shortenUrl(url)
+            viewModel.shortenUrl(url.trim())
         },
     )
 }
@@ -149,8 +149,10 @@ fun RecentlyShortenedUrlList(
             .testTag(SHORTENED_URL_LIST_TAG),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
         itemsIndexed(shortenedUrls) { index, url ->
             ShortenedUrlItem(
+                modifier = Modifier.animateItem(),
                 url = url,
                 index = index
             )
@@ -161,11 +163,11 @@ fun RecentlyShortenedUrlList(
 @Composable
 fun ShortenedUrlItem(
     url: ShortenUrl,
-    index: Int
+    index: Int,
+    modifier: Modifier = Modifier
 ) {
     ListItem(
-        modifier = Modifier
-            .testTag("${SHORTENED_URL_LIST_ITEM_TAG}_$index"),
+        modifier = modifier.testTag("${SHORTENED_URL_LIST_ITEM_TAG}_$index"),
         tonalElevation = 4.dp,
         shadowElevation = 4.dp,
         headlineContent = { Text(url.originalUrl) },
@@ -187,9 +189,24 @@ fun ShortenedUrlItemPreview() {
     }
 }
 
+
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun MainScreenPreview() {
+fun MainScreenPreviewShortList() {
+    UrlShortenerAppTheme {
+        MainScreenContent(
+            shortenedUrls = listOf(
+                ShortenUrl("https://example.com/long-url-1", "https://short.ly/1"),
+            ),
+            onShortenUrl = {},
+            isLoading = true
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true, showSystemUi = true)
+fun MainScreenPreviewLongList() {
     UrlShortenerAppTheme {
         MainScreenContent(
             shortenedUrls = listOf(

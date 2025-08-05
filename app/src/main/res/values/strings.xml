@@ -8,5 +8,6 @@
 
     <!-- Error messages -->
     <string name="url_shortening_error_generic">Error shortening Url</string>
-    <string name="url_shortening_error_duplicate">Network error, please try again</string>
+    <string name="url_shortening_error_duplicate">This URL has already been shortened.</string>
+    <string name="url_shortening_error_invalid">The provided URL has an invalid format.</string>
 </resources>

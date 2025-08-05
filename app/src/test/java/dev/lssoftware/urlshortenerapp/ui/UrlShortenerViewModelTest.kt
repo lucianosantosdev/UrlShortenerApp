@@ -82,4 +82,44 @@ class UrlShortenerViewModelTest {
         assert(viewModel.uiState.value.shortenedUrls.isEmpty())
         assertEquals(false, viewModel.uiState.value.isLoading)
     }
+
+    @Test
+    fun `When a new URL is shortened, then it should be added to the top of the list`() = runTest {
+        // Given
+        val firstUrl = "https://www.first.com"
+        val firstShortenedUrl = "https://short.url/first123"
+        val secondUrl = "https://www.second.com"
+        val secondShortenedUrl = "https://short.url/second123"
+
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            if (url == firstUrl) Result.success(firstShortenedUrl)
+            else Result.success(secondShortenedUrl)
+        }
+
+        // When
+        viewModel.shortenUrl(firstUrl)
+        viewModel.shortenUrl(secondUrl)
+
+        // Then
+        assertEquals(2, viewModel.uiState.value.shortenedUrls.size)
+        // The second shortened URL should be at the top
+        assertEquals(secondUrl, viewModel.uiState.value.shortenedUrls[0].originalUrl)
+        assertEquals(secondShortenedUrl, viewModel.uiState.value.shortenedUrls[0].shortenedUrl)
+        // The first shortened URL should be below it
+        assertEquals(firstUrl, viewModel.uiState.value.shortenedUrls[1].originalUrl)
+        assertEquals(firstShortenedUrl, viewModel.uiState.value.shortenedUrls[1].shortenedUrl)
+    }
+
+    @Test
+    fun `When an invalid URL is provided, then an error message should be shown`() = runTest {
+        // Given
+        val invalidUrl = "invalid-url"
+        // When
+        viewModel.shortenUrl(invalidUrl)
+        // Then
+        // Verify that the repository was not called
+        assert(fakeUrlShortenerRepository.calledUrls.isEmpty())
+        // Verify that the UI state has an error message for invalid URL
+        assertEquals(R.string.url_shortening_error_invalid, viewModel.uiState.value.errorMessage)
+    }
 }

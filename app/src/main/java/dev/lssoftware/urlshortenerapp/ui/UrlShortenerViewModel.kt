@@ -30,13 +30,22 @@ class UrlShortenerViewModel(
             setErrorMessage(R.string.url_shortening_error_duplicate)
             return
         }
+        if (!isValidUrl(originalUrl)) {
+            setErrorMessage(R.string.url_shortening_error_invalid)
+            return
+        }
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             val result: Result<String> = urlShortenerRepository.shortenUrl(originalUrl)
             result.onSuccess { shortenedUrl ->
                 _uiState.update {
                     it.copy(
-                        shortenedUrls = it.shortenedUrls + ShortenUrl(originalUrl, shortenedUrl),
+                        shortenedUrls = listOf(
+                            ShortenUrl(
+                                originalUrl,
+                                shortenedUrl
+                            )
+                        ) + it.shortenedUrls, // Prepend the new shortened URL
                         isLoading = false,
                         errorMessage = null
                     )
@@ -61,6 +70,13 @@ class UrlShortenerViewModel(
                 isLoading = false
             )
         }
+    }
+
+    private val WEB_URL_REGEX =
+        Regex("""^(https?:\/\/)?([\w\-]+\.)+[\w]{2,}(:\d+)?(\/\S*)?$""")
+
+    private fun isValidUrl(input: String): Boolean {
+        return WEB_URL_REGEX.matches(input)
     }
 
     class Factory(

@@ -1,8 +1,8 @@
 package dev.lssoftware.urlshortenerapp.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,7 +12,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -24,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import dev.lssoftware.urlshortenerapp.R
 import dev.lssoftware.urlshortenerapp.ui.theme.UrlShortenerAppTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 val LocalSnackbarHostState = staticCompositionLocalOf<SnackbarHostState> {
     error("No SnackbarHostState provided")
@@ -60,7 +58,12 @@ fun AppScaffold(
                         )
                     )
                 },
-                snackbarHost = { SnackbarHost(snackbarHostState) },
+                snackbarHost = {
+                    SnackbarHost(
+                        modifier = Modifier.imePadding(),
+                        hostState = snackbarHostState
+                    )
+                },
             ) { innerPadding ->
                 Surface(
                     modifier = Modifier

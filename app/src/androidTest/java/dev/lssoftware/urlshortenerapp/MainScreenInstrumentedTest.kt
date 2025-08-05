@@ -82,14 +82,14 @@ class MainScreenInstrumentedTest {
     }
 
     @Test
-    fun shouldShowErrorMessageForInvalidUrl() {
+    fun shouldShowErrorMessageForErrorShorteningUrl() {
         // Given
-        val inputUrl = "invalid_url"
+        val inputUrl = "www.example.com"
         composeTestRule.setContent {
             App(viewModel)
         }
         fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
-            Result.failure(Exception("Invalid URL format"))
+            Result.failure(Exception("Error shortening URL"))
         }
         // When
         composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
