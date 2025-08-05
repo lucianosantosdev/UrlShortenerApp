@@ -7,7 +7,9 @@
     <string name="recently_shortened_urls_section_label">Recently Shortened URLs</string>
 
     <!-- Error messages -->
-    <string name="url_shortening_error_generic">Error shortening Url</string>
     <string name="url_shortening_error_duplicate">This URL has already been shortened.</string>
     <string name="url_shortening_error_invalid">The provided URL has an invalid format.</string>
+    <string name="url_shortening_error_network">Network error occurred. Check your connection and try again.</string>
+    <string name="url_shortening_error_server">Server error occurred. Please try again later.</string>
+    <string name="url_shortening_error_unknown">An unknown error occurred. Please try again.</string>
 </resources>

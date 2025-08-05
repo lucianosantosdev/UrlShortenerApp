@@ -2,6 +2,7 @@ package dev.lssoftware.urlshortenerapp.data
 
 import dev.lssoftware.urlshortenerapp.MainDispatcherRule
 import dev.lssoftware.urlshortenerapp.network.UrlShortenerAPI
+import dev.lssoftware.urlshortenerapp.network.UrlShortenerRepositoryImpl
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import mockwebserver3.MockResponse

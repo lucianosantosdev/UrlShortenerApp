@@ -103,7 +103,7 @@ class MainScreenInstrumentedTest {
             .assertCountEquals(0)
         // Assert snackbar contains error text
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val errorMessage = context.getString(R.string.url_shortening_error_generic)
+        val errorMessage = context.getString(R.string.url_shortening_error_unknown)
         composeTestRule.onNodeWithText(errorMessage).assertIsDisplayed()
     }
 

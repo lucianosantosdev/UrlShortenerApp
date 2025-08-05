@@ -32,6 +32,10 @@ public class Log {
         return println(ERROR, tag, msg);
     }
 
+    public static int e(String tag, String msg, Throwable tr) {
+        return println(ERROR, tag, msg);
+    }
+
     public static int wtf(String tag, String msg) {
         return println(ASSERT, tag, msg);
     }

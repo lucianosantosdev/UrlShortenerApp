@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dev.lssoftware.urlshortenerapp.R
 import dev.lssoftware.urlshortenerapp.data.UrlShortenerRepository
 import dev.lssoftware.urlshortenerapp.model.ShortenUrl
+import dev.lssoftware.urlshortenerapp.model.UrlShortenerError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,7 @@ class UrlShortenerViewModel(
     data class UiState(
         val isLoading: Boolean = false,
         val shortenedUrls: List<ShortenUrl> = emptyList(),
-        @StringRes val errorMessage: Int? = null
+        @param:StringRes val errorMessage: Int? = null
     )
 
     fun shortenUrl(originalUrl: String) {
@@ -51,9 +52,21 @@ class UrlShortenerViewModel(
                     )
                 }
             }.onFailure { error ->
-                // TODO: mapping error codes to a user-friendly message, for simplicity, we show a generic error message
-                setErrorMessage(R.string.url_shortening_error_generic)
+                val errorMessage = if (error is UrlShortenerError) {
+                    error.toMessageRes()
+                } else {
+                    R.string.url_shortening_error_unknown
+                }
+                setErrorMessage(errorMessage)
             }
+        }
+    }
+
+    private fun UrlShortenerError.toMessageRes(): Int {
+        return when (this) {
+            is UrlShortenerError.NetworkError -> R.string.url_shortening_error_network
+            is UrlShortenerError.ServerError -> R.string.url_shortening_error_server
+            else -> R.string.url_shortening_error_unknown
         }
     }
 

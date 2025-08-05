@@ -3,6 +3,7 @@ package dev.lssoftware.urlshortenerapp.ui
 import dev.lssoftware.urlshortenerapp.MainDispatcherRule
 import dev.lssoftware.urlshortenerapp.R
 import dev.lssoftware.urlshortenerapp.data.FakeUrlShortenerRepositoryImpl
+import dev.lssoftware.urlshortenerapp.model.UrlShortenerError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -78,7 +79,10 @@ class UrlShortenerViewModelTest {
         // Verify that the repository was called with the correct URL
         assertEquals(validUrl, fakeUrlShortenerRepository.calledUrls.first())
         // Verify that the UI state has an error message for generic error
-        assertEquals(R.string.url_shortening_error_generic, viewModel.uiState.value.errorMessage)
+        assertEquals(
+            dev.lssoftware.urlshortenerapp.R.string.url_shortening_error_unknown,
+            viewModel.uiState.value.errorMessage
+        )
         assert(viewModel.uiState.value.shortenedUrls.isEmpty())
         assertEquals(false, viewModel.uiState.value.isLoading)
     }
@@ -121,5 +125,31 @@ class UrlShortenerViewModelTest {
         assert(fakeUrlShortenerRepository.calledUrls.isEmpty())
         // Verify that the UI state has an error message for invalid URL
         assertEquals(R.string.url_shortening_error_invalid, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `When server error occurs, then an error message should be shown`() = runTest {
+        // Given
+        val validUrl = "https://www.example.com"
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            Result.failure(UrlShortenerError.ServerError("Server error"))
+        }
+        // When
+        viewModel.shortenUrl(validUrl)
+        // Then
+        assertEquals(R.string.url_shortening_error_server, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `When network error occurs, then an error message should be shown`() = runTest {
+        // Given
+        val validUrl = "https://www.example.com"
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            Result.failure(UrlShortenerError.NetworkError)
+        }
+        // When
+        viewModel.shortenUrl(validUrl)
+        // Then
+        assertEquals(R.string.url_shortening_error_network, viewModel.uiState.value.errorMessage)
     }
 }

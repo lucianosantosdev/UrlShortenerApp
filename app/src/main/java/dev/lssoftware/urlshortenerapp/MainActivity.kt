@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.lssoftware.urlshortenerapp.data.UrlShortenerRepositoryImpl
 import dev.lssoftware.urlshortenerapp.network.UrlShortenerAPI
+import dev.lssoftware.urlshortenerapp.network.UrlShortenerRepositoryImpl
 import dev.lssoftware.urlshortenerapp.ui.App
 import dev.lssoftware.urlshortenerapp.ui.UrlShortenerViewModel
 
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         // As no dependency injection framework is used, we manually create the repository and provide it to the ViewModel factory to keep it life-cycle aware
         val repository = UrlShortenerRepositoryImpl(UrlShortenerAPI.create())
         viewModelFactory = UrlShortenerViewModel.Factory(repository)
-        
+
         enableEdgeToEdge()
         setContent {
             val viewModel: UrlShortenerViewModel = viewModel(factory = viewModelFactory)
