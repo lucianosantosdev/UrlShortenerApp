@@ -15,8 +15,11 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // As no dependency injection framework is used, we manually create the repository and provide it to the ViewModel factory to keep it life-cycle aware
         val repository = UrlShortenerRepositoryImpl(UrlShortenerAPI.create())
         viewModelFactory = UrlShortenerViewModel.Factory(repository)
+        
         enableEdgeToEdge()
         setContent {
             val viewModel: UrlShortenerViewModel = viewModel(factory = viewModelFactory)

@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import dev.lssoftware.urlshortenerapp.R
 import dev.lssoftware.urlshortenerapp.ui.theme.UrlShortenerAppTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -51,7 +53,7 @@ fun AppScaffold(
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     CenterAlignedTopAppBar(
-                        title = { Text("URL Shortener") },
+                        title = { Text(stringResource(R.string.app_title)) },
                         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             titleContentColor = MaterialTheme.colorScheme.onPrimary

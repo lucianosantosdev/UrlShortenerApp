@@ -35,7 +35,7 @@ class UrlShortenerViewModel(
                     )
                 }
             }.onFailure { error ->
-                // TODO: mapping error to a user-friendly message
+                // TODO: mapping error codes to a user-friendly message, for simplicity, we show a generic error message
                 _uiState.update {
                     it.copy(
                         errorMessage = R.string.url_shortening_error

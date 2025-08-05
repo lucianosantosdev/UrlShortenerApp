@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Url Shortener App</string>
     <string name="url_shortening_error">Error shortening Url</string>
+    <string name="url_input_label">Enter URL to shorten</string>
+    <string name="url_input_placeholder">https://example.com</string>
+    <string name="shorten_button_label">Shorten</string>
+    <string name="app_title">URL Shortener</string>
 </resources>

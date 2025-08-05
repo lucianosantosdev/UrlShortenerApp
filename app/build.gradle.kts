@@ -47,6 +47,13 @@ android {
             )
         }
     }
+    lint {
+        abortOnError = true
+        warningsAsErrors = true
+        checkReleaseBuilds = true
+        xmlReport = true
+        htmlReport = true
+    }
 }
 
 kotlin {
@@ -55,7 +62,6 @@ kotlin {
     }
 }
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -81,4 +87,5 @@ dependencies {
     androidTestImplementation(libs.compose.ui.test)
     androidTestImplementation(libs.compose.ui.test.manifest)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    debugImplementation(libs.androidx.ui.tooling)
 }
