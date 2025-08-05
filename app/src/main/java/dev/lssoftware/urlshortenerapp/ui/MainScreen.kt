@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
@@ -33,6 +35,7 @@ const val URL_TEXT_FIELD_TAG = "URL_TEXT_FIELD_TAG"
 const val SHORTEN_BUTTON_TAG = "SHORTEN_BUTTON_TAG"
 const val SHORTENED_URL_LIST_TAG = "SHORTENED_URL_LIST_TAG"
 const val SHORTENED_URL_LIST_ITEM_TAG = "SHORTENED_URL_LIST_ITEM_TAG"
+const val LOADING_INDICATOR_TAG = "LOADING_INDICATOR_TAG"
 
 @Composable
 fun MainScreen(
@@ -53,6 +56,7 @@ fun MainScreen(
     }
 
     MainScreenContent(
+        isLoading = uiState.isLoading,
         shortenedUrls = uiState.shortenedUrls,
         onShortenUrl = { url ->
             viewModel.shortenUrl(url)
@@ -62,6 +66,7 @@ fun MainScreen(
 
 @Composable
 fun MainScreenContent(
+    isLoading: Boolean,
     shortenedUrls: List<ShortenUrl>,
     onShortenUrl: (String) -> Unit,
 ) {
@@ -69,7 +74,9 @@ fun MainScreenContent(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        UrlInput {
+        UrlInput(
+            isLoading = isLoading
+        ) {
             onShortenUrl(it)
         }
         RecentlyShortenedUrlList(
@@ -80,6 +87,7 @@ fun MainScreenContent(
 
 @Composable
 fun UrlInput(
+    isLoading: Boolean,
     modifier: Modifier = Modifier,
     onShortenUrl: (String) -> Unit = {}
 ) {
@@ -96,14 +104,23 @@ fun UrlInput(
             value = url,
             onValueChange = { url = it },
             label = { Text(stringResource(R.string.url_input_label)) },
-            placeholder = { Text(stringResource(R.string.url_input_placeholder)) }
+            placeholder = { Text(stringResource(R.string.url_input_placeholder)) },
+            enabled = !isLoading
         )
         Button(
             modifier = Modifier.testTag(SHORTEN_BUTTON_TAG),
             onClick = { onShortenUrl(url) },
-            enabled = url.isNotEmpty()
+            enabled = url.isNotEmpty() && !isLoading
         ) {
-            Text(stringResource(R.string.shorten_button_label))
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = modifier
+                        .size(24.dp)
+                        .testTag(LOADING_INDICATOR_TAG)
+                )
+            } else {
+                Text(stringResource(R.string.shorten_button_label))
+            }
         }
     }
 }
@@ -181,7 +198,8 @@ fun MainScreenPreview() {
                 ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
                 ShortenUrl("https://example.com/long-url-3", "https://short.ly/3")
             ),
-            onShortenUrl = {}
+            onShortenUrl = {},
+            isLoading = true
         )
     }
 }

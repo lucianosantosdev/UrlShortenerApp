@@ -15,6 +15,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.lssoftware.urlshortenerapp.data.FakeUrlShortenerRepositoryImpl
 import dev.lssoftware.urlshortenerapp.ui.App
+import dev.lssoftware.urlshortenerapp.ui.LOADING_INDICATOR_TAG
 import dev.lssoftware.urlshortenerapp.ui.SHORTENED_URL_LIST_TAG
 import dev.lssoftware.urlshortenerapp.ui.SHORTEN_BUTTON_TAG
 import dev.lssoftware.urlshortenerapp.ui.URL_TEXT_FIELD_TAG
@@ -55,12 +56,15 @@ class MainScreenInstrumentedTest {
     @Test
     fun shouldAddShortenedUrlToTheList() {
         // Given
-        val inputUrl = "https://www.example.com"
-        val fakeShortenedUrl = "https://short.url/abc123"
-        fakeUrlShortenerRepository.shortenedUrlResponse = fakeShortenedUrl
         composeTestRule.setContent {
             App(viewModel)
         }
+        val inputUrl = "https://www.example.com"
+        val fakeShortenedUrl = "https://short.url/abc123"
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            Result.success(fakeShortenedUrl)
+        }
+
         // When
         composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
         composeTestRule.onNodeWithTag(SHORTEN_BUTTON_TAG).performClick()
@@ -81,9 +85,11 @@ class MainScreenInstrumentedTest {
     fun shouldShowErrorMessageForInvalidUrl() {
         // Given
         val inputUrl = "invalid_url"
-        fakeUrlShortenerRepository.shortenedUrlResponse = null
         composeTestRule.setContent {
             App(viewModel)
+        }
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            Result.failure(Exception("Invalid URL format"))
         }
         // When
         composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
@@ -104,11 +110,13 @@ class MainScreenInstrumentedTest {
     @Test
     fun shouldShowErrorMessageForDuplicateUrl() {
         // Given
-        val inputUrl = "https://www.example.com"
-        val fakeShortenedUrl = "https://short.url/abc123"
-        fakeUrlShortenerRepository.shortenedUrlResponse = fakeShortenedUrl
         composeTestRule.setContent {
             App(viewModel)
+        }
+        val inputUrl = "https://www.example.com"
+        val fakeShortenedUrl = "https://short.url/abc123"
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            Result.success(fakeShortenedUrl)
         }
         composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
         composeTestRule.onNodeWithTag(SHORTEN_BUTTON_TAG).performClick()
@@ -126,5 +134,27 @@ class MainScreenInstrumentedTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val errorMessage = context.getString(R.string.url_shortening_error_duplicate)
         composeTestRule.onNodeWithText(errorMessage).assertIsDisplayed()
+    }
+
+    @Test
+    fun shouldShowLoadingIndicatorWhileShortening() {
+        // Given
+        composeTestRule.setContent {
+            App(viewModel)
+        }
+        val inputUrl = "https://www.example.com"
+        val fakeShortenedUrl = "https://short.url/abc123"
+        fakeUrlShortenerRepository.shortenedUrlResponse = { url ->
+            Result.success(fakeShortenedUrl)
+        }
+        fakeUrlShortenerRepository.enableProceedSignal = true
+        // When
+        composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
+        composeTestRule.onNodeWithTag(SHORTEN_BUTTON_TAG).performClick()
+        // Then
+        // Verify that the loading indicator is displayed
+        composeTestRule.onNodeWithTag(LOADING_INDICATOR_TAG).assertIsDisplayed()
+        fakeUrlShortenerRepository.proceedSignal.complete(Unit)
+        composeTestRule.onNodeWithTag(LOADING_INDICATOR_TAG).assertDoesNotExist()
     }
 }

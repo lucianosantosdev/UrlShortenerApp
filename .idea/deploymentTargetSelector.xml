@@ -5,10 +5,16 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="shouldShowErrorMessageForDuplicateUrl()">
+      <SelectionState runConfigName="shouldAddShortenedUrlToTheList()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="shouldAddShortenedUrlToTheList()">
+      <SelectionState runConfigName="MainScreenInstrumentedTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="shouldShowErrorMessageForInvalidUrl()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="shouldShowLoadingIndicatorWhileShortening()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

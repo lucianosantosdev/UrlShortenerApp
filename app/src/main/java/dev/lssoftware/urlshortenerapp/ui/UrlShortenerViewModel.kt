@@ -20,6 +20,7 @@ class UrlShortenerViewModel(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     data class UiState(
+        val isLoading: Boolean = false,
         val shortenedUrls: List<ShortenUrl> = emptyList(),
         @StringRes val errorMessage: Int? = null
     )
@@ -29,12 +30,14 @@ class UrlShortenerViewModel(
             setErrorMessage(R.string.url_shortening_error_duplicate)
             return
         }
+        _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             val result: Result<String> = urlShortenerRepository.shortenUrl(originalUrl)
             result.onSuccess { shortenedUrl ->
                 _uiState.update {
                     it.copy(
                         shortenedUrls = it.shortenedUrls + ShortenUrl(originalUrl, shortenedUrl),
+                        isLoading = false,
                         errorMessage = null
                     )
                 }
@@ -53,7 +56,10 @@ class UrlShortenerViewModel(
 
     private fun setErrorMessage(@StringRes message: Int) {
         _uiState.update {
-            it.copy(errorMessage = message)
+            it.copy(
+                errorMessage = message,
+                isLoading = false
+            )
         }
     }
 
