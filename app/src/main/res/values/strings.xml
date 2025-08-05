@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Url Shortener App</string>
     <string name="app_title">URL Shortener</string>
-    <string name="url_shortening_error">Error shortening Url</string>
     <string name="url_input_label">Enter URL to shorten</string>
     <string name="url_input_placeholder">https://example.com</string>
     <string name="shorten_button_label">Shorten</string>
     <string name="recently_shortened_urls_section_label">Recently Shortened URLs</string>
+
+    <!-- Error messages -->
+    <string name="url_shortening_error_generic">Error shortening Url</string>
+    <string name="url_shortening_error_duplicate">Network error, please try again</string>
 </resources>

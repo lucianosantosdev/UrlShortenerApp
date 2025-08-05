@@ -67,7 +67,7 @@ class MainScreenInstrumentedTest {
         // Then
         // Verify that the repository was called with the correct URL
         assertEquals(inputUrl, fakeUrlShortenerRepository.calledUrls.first())
-        // Verify that the UI displays the shortened URL
+        // 1.Verify that the UI displays the shortened URL
         composeTestRule.onNodeWithTag(SHORTENED_URL_LIST_TAG)
             .onChildren()
             .assertCountEquals(1)
@@ -85,8 +85,6 @@ class MainScreenInstrumentedTest {
         composeTestRule.setContent {
             App(viewModel)
         }
-        val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val errorMessage = context.getString(R.string.url_shortening_error)
         // When
         composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
         composeTestRule.onNodeWithTag(SHORTEN_BUTTON_TAG).performClick()
@@ -98,6 +96,35 @@ class MainScreenInstrumentedTest {
             .onChildren()
             .assertCountEquals(0)
         // Assert snackbar contains error text
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val errorMessage = context.getString(R.string.url_shortening_error_generic)
+        composeTestRule.onNodeWithText(errorMessage).assertIsDisplayed()
+    }
+
+    @Test
+    fun shouldShowErrorMessageForDuplicateUrl() {
+        // Given
+        val inputUrl = "https://www.example.com"
+        val fakeShortenedUrl = "https://short.url/abc123"
+        fakeUrlShortenerRepository.shortenedUrlResponse = fakeShortenedUrl
+        composeTestRule.setContent {
+            App(viewModel)
+        }
+        composeTestRule.onNodeWithTag(URL_TEXT_FIELD_TAG).performTextInput(inputUrl)
+        composeTestRule.onNodeWithTag(SHORTEN_BUTTON_TAG).performClick()
+        // When
+        composeTestRule.onNodeWithTag(SHORTEN_BUTTON_TAG).performClick()
+        // Then
+        // 1.Verify that the repository was called with the correct URL only once
+        assertEquals(1, fakeUrlShortenerRepository.calledUrls.size)
+        assertEquals(inputUrl, fakeUrlShortenerRepository.calledUrls.first())
+        // 2.Verify that the UI does not display any new shortened URLs
+        composeTestRule.onNodeWithTag(SHORTENED_URL_LIST_TAG)
+            .onChildren()
+            .assertCountEquals(1)
+        // 3.Assert snackbar contains error text
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val errorMessage = context.getString(R.string.url_shortening_error_duplicate)
         composeTestRule.onNodeWithText(errorMessage).assertIsDisplayed()
     }
 }

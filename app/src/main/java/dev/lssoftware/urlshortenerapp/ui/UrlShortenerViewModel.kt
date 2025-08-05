@@ -25,6 +25,10 @@ class UrlShortenerViewModel(
     )
 
     fun shortenUrl(originalUrl: String) {
+        if (_uiState.value.shortenedUrls.any { it.originalUrl == originalUrl }) {
+            setErrorMessage(R.string.url_shortening_error_duplicate)
+            return
+        }
         viewModelScope.launch {
             val result: Result<String> = urlShortenerRepository.shortenUrl(originalUrl)
             result.onSuccess { shortenedUrl ->
@@ -36,11 +40,7 @@ class UrlShortenerViewModel(
                 }
             }.onFailure { error ->
                 // TODO: mapping error codes to a user-friendly message, for simplicity, we show a generic error message
-                _uiState.update {
-                    it.copy(
-                        errorMessage = R.string.url_shortening_error
-                    )
-                }
+                setErrorMessage(R.string.url_shortening_error_generic)
             }
         }
     }
@@ -48,6 +48,12 @@ class UrlShortenerViewModel(
     fun clearErrorMessage() {
         _uiState.update {
             it.copy(errorMessage = null)
+        }
+    }
+
+    private fun setErrorMessage(@StringRes message: Int) {
+        _uiState.update {
+            it.copy(errorMessage = message)
         }
     }
 
