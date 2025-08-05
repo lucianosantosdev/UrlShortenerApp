@@ -3,10 +3,13 @@ package dev.lssoftware.urlshortenerapp.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ListItem
@@ -18,13 +21,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.lssoftware.urlshortenerapp.R
@@ -91,7 +95,7 @@ fun UrlInput(
     modifier: Modifier = Modifier,
     onShortenUrl: (String) -> Unit = {}
 ) {
-    var url by remember { mutableStateOf("") }
+    var url by rememberSaveable { mutableStateOf("") }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -105,6 +109,12 @@ fun UrlInput(
             onValueChange = { url = it },
             label = { Text(stringResource(R.string.url_input_label)) },
             placeholder = { Text(stringResource(R.string.url_input_placeholder)) },
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onShortenUrl(url)
+                }
+            ),
             enabled = !isLoading
         )
         Button(
@@ -134,7 +144,9 @@ fun RecentlyShortenedUrlList(
         modifier = Modifier.padding(bottom = 8.dp)
     )
     LazyColumn(
-        modifier = Modifier.testTag(SHORTENED_URL_LIST_TAG),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(SHORTENED_URL_LIST_TAG),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(shortenedUrls) { index, url ->
