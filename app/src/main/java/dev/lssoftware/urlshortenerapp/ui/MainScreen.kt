@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -65,7 +66,8 @@ fun MainScreenContent(
     onShortenUrl: (String) -> Unit,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         UrlInput {
             onShortenUrl(it)
@@ -84,10 +86,13 @@ fun UrlInput(
     var url by remember { mutableStateOf("") }
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
-            modifier = Modifier.testTag(URL_TEXT_FIELD_TAG),
+            modifier = Modifier
+                .weight(1f)
+                .testTag(URL_TEXT_FIELD_TAG),
             value = url,
             onValueChange = { url = it },
             label = { Text(stringResource(R.string.url_input_label)) },
@@ -107,19 +112,49 @@ fun UrlInput(
 fun RecentlyShortenedUrlList(
     shortenedUrls: List<ShortenUrl> = emptyList()
 ) {
+    Text(
+        text = stringResource(R.string.recently_shortened_urls_section_label),
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
     LazyColumn(
         modifier = Modifier.testTag(SHORTENED_URL_LIST_TAG),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(shortenedUrls) { index, url ->
-            ListItem(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .testTag("${SHORTENED_URL_LIST_ITEM_TAG}_$index"),
-                headlineContent = { Text(url.originalUrl) },
-                supportingContent = { Text(url.shortenedUrl) },
+            ShortenedUrlItem(
+                url = url,
+                index = index
             )
         }
+    }
+}
+
+@Composable
+fun ShortenedUrlItem(
+    url: ShortenUrl,
+    index: Int
+) {
+    ListItem(
+        modifier = Modifier
+            .testTag("${SHORTENED_URL_LIST_ITEM_TAG}_$index"),
+        tonalElevation = 4.dp,
+        shadowElevation = 4.dp,
+        headlineContent = { Text(url.originalUrl) },
+        supportingContent = { Text(url.shortenedUrl) },
+    )
+}
+
+@Composable
+@Preview(showBackground = true)
+fun ShortenedUrlItemPreview() {
+    UrlShortenerAppTheme {
+        ShortenedUrlItem(
+            url = ShortenUrl(
+                originalUrl = "https://example.com/long-url",
+                shortenedUrl = "https://short.ly/1"
+            ),
+            index = 0
+        )
     }
 }
 
@@ -130,6 +165,19 @@ fun MainScreenPreview() {
         MainScreenContent(
             shortenedUrls = listOf(
                 ShortenUrl("https://example.com/long-url-1", "https://short.ly/1"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
+                ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
                 ShortenUrl("https://example.com/long-url-2", "https://short.ly/2"),
                 ShortenUrl("https://example.com/long-url-3", "https://short.ly/3")
             ),
